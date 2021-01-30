@@ -1,0 +1,23 @@
+{
+  "name": "skeleton-simple",
+  "version": "1.0.0",
+  "description": "Simple site template",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m-berdnikov/skeleton-simple.git"
+  },
+  "author": "Maxim Berdnikov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/m-berdnikov/skeleton-simple/issues"
+  },
+  "homepage": "https://github.com/m-berdnikov/skeleton-simple#readme",
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "gulp-sass": "^4.1.0"
+  }
+}
