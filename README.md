@@ -1,2 +1,2 @@
-# skeleton-simple
- Simple website template
+# Simple website template
+Исользуется gulp.
