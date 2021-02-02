@@ -11,66 +11,67 @@ const sass = require('gulp-sass');
 const del = require('del');
 const plumber = require('gulp-plumber')
 
-const ASSETS_PATH = 'public',
-    TEMPLATES_PATH = 'templates';
+const ASSETS_PATH_SRC = 'src',
+    ASSETS_PATH_BUILD = 'build',
+    PAGE_PATH = 'pages';
 
 function browsersync() {
     browserSync.init({ // Инициализация Browsersync
-        server: { baseDir: ASSETS_PATH }, // Указываем папку сервера
+        server: { baseDir: './' }, // Указываем папку сервера
         notify: false, // Отключаем уведомления
-        online: true // Режим работы: true или false
+        online: true, // Режим работы: true или false
     })
 }
 
 function compressJS() {
-    return src(`${ASSETS_PATH}/src/js/**/*.js`)
+    return src(`${ASSETS_PATH_SRC}/js/**/*.js`)
         .pipe(plumber())
         .pipe(babel())
         .pipe(uglify())
         .pipe(rename({
             suffix: '.min'
         }))
-        .pipe(dest(`${ASSETS_PATH}/build/js/`))
+        .pipe(dest(`${ASSETS_PATH_BUILD}/js/`))
         .pipe(browserSync.stream()) // Триггерим Browsersync для обновления страницы
 }
 
 function sassFun() {
-    return src(`${ASSETS_PATH}/src/scss/**/*.scss`)
+    return src(`${ASSETS_PATH_SRC}/scss/**/*.scss`)
         // .pipe(eval(preprocessor)()) // Преобразуем значение переменной "preprocessor" в функцию
         .pipe(plumber())
         .pipe(sass())
-        .pipe(dest(`${ASSETS_PATH}/build/css/`))
+        .pipe(dest(`${ASSETS_PATH_BUILD}/css/`))
         .pipe(browserSync.stream()) // Сделаем инъекцию в браузер
 }
 
 function compressCSS() {
-    return src([`${ASSETS_PATH}/build/css/**/*.css`, `!${ASSETS_PATH}/build/css/**/*.min.css`])
+    return src([`${ASSETS_PATH_BUILD}/css/**/*.css`, `!${ASSETS_PATH_BUILD}/css/**/*.min.css`])
         .pipe(plumber())
         .pipe(autoprefixer({ overrideBrowserslist: ['last 10 versions'], grid: true }))
         .pipe(cleancss({ level: { 2: { removeDuplicateRules: true } }/* , format: 'beautify' */ })) // Минифицируем стили
         .pipe(rename({
             suffix: '.min'
         }))
-        .pipe(dest(`${ASSETS_PATH}/build/css/`))
+        .pipe(dest(`${ASSETS_PATH_BUILD}/css/`))
         .pipe(browserSync.stream()) // Сделаем инъекцию в браузер
 }
 
 function compressImg() {
-    return src(`${ASSETS_PATH}/src/img/**/*`)
-        .pipe(newer(`${ASSETS_PATH}/build/img/`)) // Проверяем, было ли изменено (сжато) изображение ранее
+    return src(`${ASSETS_PATH_SRC}/img/**/*`)
+        .pipe(newer(`${ASSETS_PATH_BUILD}/img/`)) // Проверяем, было ли изменено (сжато) изображение ранее
         .pipe(imagemin()) // Сжимаем и оптимизируем изображеня
-        .pipe(dest(`${ASSETS_PATH}/build/img/`)) 
+        .pipe(dest(`${ASSETS_PATH_BUILD}/img/`))
 }
 
 function cleanBuild() {
-	return del(`${ASSETS_PATH}/build/**/*`, { force: true })
+    return del(`${ASSETS_PATH_BUILD}/**/*`, { force: true })
 }
 
 function startWatch() {
-    watch(`${ASSETS_PATH}/src/js/**/*.js`, compressJS);
-    watch(`${ASSETS_PATH}src/scss/**/*.scss`, sassFun);
-    watch(`${ASSETS_PATH}/src/img/**/*`, compressImg);
-    watch(`${ASSETS_PATH}/**/*.html`).on('change', browserSync.reload);
+    watch(`${ASSETS_PATH_SRC}/js/**/*.js`, compressJS);
+    watch(`${ASSETS_PATH_SRC}/scss/**/*.scss`, sassFun);
+    watch(`${ASSETS_PATH_SRC}/img/**/*`, compressImg);
+    watch(`${PAGE_PATH}/**/*.html`).on('change', browserSync.reload);
 }
 
 exports.js = compressJS;
