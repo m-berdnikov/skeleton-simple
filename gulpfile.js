@@ -9,7 +9,12 @@ const babel = require('gulp-babel');
 const rename = require('gulp-rename');
 const sass = require('gulp-sass');
 const del = require('del');
-const plumber = require('gulp-plumber')
+const plumber = require('gulp-plumber');
+const realFavicon = require ('gulp-real-favicon');
+const fs = require('fs');
+
+// File where the favicon markups are stored
+var FAVICON_DATA_FILE = 'faviconData.json';
 
 const ASSETS_PATH_SRC = 'src',
     ASSETS_PATH_BUILD = 'build',
@@ -74,10 +79,108 @@ function startWatch() {
     watch(`${PAGE_PATH}/**/*.html`).on('change', browserSync.reload);
 }
 
+// Generate the icons. This task takes a few seconds to complete.
+// You should run it at least once to create the icons. Then,
+// you should run it whenever RealFaviconGenerator updates its
+// package (see the check-for-favicon-update task below).
+
+function generateFavicon(done) {
+    realFavicon.generateFavicon({
+		masterPicture: `${ASSETS_PATH_SRC}/img/logo.svg`,
+		dest: `${ASSETS_PATH_SRC}/favicon`,
+		iconsPath: `../${ASSETS_PATH_BUILD}/favicon`,
+		design: {
+			ios: {
+				pictureAspect: 'noChange',
+				assets: {
+					ios6AndPriorIcons: false,
+					ios7AndLaterIcons: false,
+					precomposedIcons: false,
+					declareOnlyDefaultIcon: true
+				}
+			},
+			desktopBrowser: {
+				design: 'raw'
+			},
+			windows: {
+				pictureAspect: 'noChange',
+				backgroundColor: '#da532c',
+				onConflict: 'override',
+				assets: {
+					windows80Ie10Tile: false,
+					windows10Ie11EdgeTiles: {
+						small: false,
+						medium: true,
+						big: false,
+						rectangle: false
+					}
+				}
+			},
+			androidChrome: {
+				pictureAspect: 'noChange',
+				themeColor: '#ffffff',
+				manifest: {
+					display: 'standalone',
+					orientation: 'notSet',
+					onConflict: 'override',
+					declared: true
+				},
+				assets: {
+					legacyIcon: false,
+					lowResolutionIcons: false
+				}
+			},
+			safariPinnedTab: {
+				pictureAspect: 'silhouette',
+				themeColor: '#5bbad5'
+			}
+		},
+		settings: {
+			scalingAlgorithm: 'Mitchell',
+			errorOnImageTooSmall: false,
+			readmeFile: false,
+			htmlCodeFile: false,
+			usePathAsIs: false
+		},
+		markupFile: FAVICON_DATA_FILE
+	}, function() {
+		done();
+	});
+}
+
+// Inject the favicon markups in your HTML pages. You should run
+// this task whenever you modify a page. You can keep this task
+// as is or refactor your existing HTML pipeline.
+function injectFaviconMarkups() {
+    return src(`${PAGE_PATH}/**/*.html`)
+		.pipe(realFavicon.injectFaviconMarkups(JSON.parse(fs.readFileSync(FAVICON_DATA_FILE)).favicon.html_code))
+        .pipe(dest(`${PAGE_PATH}`));
+}
+
+// Check for updates on RealFaviconGenerator (think: Apple has just
+// released a new Touch icon along with the latest version of iOS).
+// Run this task from time to time. Ideally, make it part of your
+// continuous integration system.
+
+
+function checkForFaviconUpdate(done) {
+    var currentVersion = JSON.parse(fs.readFileSync(FAVICON_DATA_FILE)).version;
+	realFavicon.checkForUpdates(currentVersion, function(err) {
+		if (err) {
+			throw err;
+		}
+	});
+}
+
+function moveFavicon() {
+    return src(`${ASSETS_PATH_SRC}/favicon/**/*`)
+    .pipe(dest(`${ASSETS_PATH_BUILD}/favicon/`))
+}
+
 exports.js = compressJS;
 exports.sass = sassFun;
 exports.img = compressImg;
-
-exports.default = parallel(sassFun, compressJS, compressImg, browsersync, startWatch);
+exports.createFavicon = series(generateFavicon, moveFavicon, injectFaviconMarkups);
 exports.css = series(sassFun, compressCSS);
-exports.build = series(cleanBuild, sassFun, compressCSS, compressJS, compressImg);
+exports.build = series(cleanBuild, sassFun, compressCSS, compressJS, generateFavicon, compressImg, generateFavicon, moveFavicon, injectFaviconMarkups);
+exports.default = parallel(sassFun, compressJS, compressImg, browsersync, startWatch);
