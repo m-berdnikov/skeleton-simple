@@ -1,2 +1,2 @@
-# skeleton-simple
- Simple website template
+# Simple website template
+Для раскатки локального сервера испльзуется Gulp 4.

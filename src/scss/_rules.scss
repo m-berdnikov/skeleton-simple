@@ -1,0 +1,16 @@
+body {
+    background-color: $white;
+    font: 400 14px/18px $font;
+    color: $black;
+    text-align: center;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 100vh;
+    height: 100%;
+}
+
