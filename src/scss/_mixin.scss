@@ -1,0 +1,11 @@
+@mixin widthContent($MW, $W, $M) {
+    margin: $M auto;
+    max-width: $MW;
+    width: $W;
+}
+
+@mixin fontNormal($S, $L, $W) {
+    font-size: $S;
+    line-height: $L;
+    font-weight: $W;
+}

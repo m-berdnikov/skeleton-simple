@@ -1,3 +1,1 @@
-alert('May the Force be with you');
-
-console.log('hello');
+console.log('May the Force be with you');

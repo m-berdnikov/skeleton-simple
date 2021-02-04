@@ -1,16 +1,18 @@
-h1 {
-    color: #ff0000;
+@import '_normalize';
+@import '_color';
+@import '_fonts';
+@import '_mixin';
+@import '_variables';
+@import '_rules';
+
+.header {
+   &__logo {
+       margin: 20px auto;
+       display: block;
+       width: 50px;
+       height: 50px;
+       background: url('../img/logo.svg') center / cover no-repeat;
+   }
 }
 
-h2 {
-    color: #ff0000;
-}
-
-h2 {
-   font-weight: 700;
-}
-
-div {
-    display: flex;
-    font-weight: 700;
-}
+@import '_media';
