@@ -162,7 +162,6 @@ function injectFaviconMarkups() {
 // Run this task from time to time. Ideally, make it part of your
 // continuous integration system.
 
-
 function checkForFaviconUpdate(done) {
     var currentVersion = JSON.parse(fs.readFileSync(FAVICON_DATA_FILE)).version;
 	realFavicon.checkForUpdates(currentVersion, function(err) {
@@ -180,7 +179,7 @@ function moveFavicon() {
 exports.js = compressJS;
 exports.sass = sassFun;
 exports.img = compressImg;
-exports.createFavicon = series(generateFavicon, moveFavicon, injectFaviconMarkups);
 exports.css = series(sassFun, compressCSS);
-exports.build = series(cleanBuild, sassFun, compressCSS, compressJS, generateFavicon, compressImg, generateFavicon, moveFavicon, injectFaviconMarkups);
+exports.createFavicon = series(generateFavicon, moveFavicon, injectFaviconMarkups);
+exports.build = series(cleanBuild, sassFun, compressCSS, compressJS, compressImg, moveFavicon);
 exports.default = parallel(sassFun, compressJS, compressImg, browsersync, startWatch);
