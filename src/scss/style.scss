@@ -1,9 +1,10 @@
 @import '_normalize';
-@import '_color';
+@import '_colors';
 @import '_fonts';
 @import '_mixin';
 @import '_variables';
 @import '_rules';
+@import '_forms';
 
 .header {
    &__logo {

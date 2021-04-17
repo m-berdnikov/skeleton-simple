@@ -3,10 +3,14 @@
 
 <head>
     @@include('components/_meta.html', {
-        "title": "Jedi Academy"
-        })
+    "title": "Jedi Academy"
+    })
+
+    @@include('components/_favicon.html')
 
     @@include('components/_head.html')
+
+    <link rel="stylesheet" href="../vendor/just-validate/dist/css/justValidateTooltip.min.css">
 </head>
 
 <body>
@@ -16,10 +20,24 @@
             <main class="main">
                 <h1>May the Force be with you</h1>
                 <img src="../img/1-2.png" alt="Alt" width="500" height="500">
+                <form class="form js-form-subscribe" method="POST" action="">
+                    <div class="just-validate-tooltip-container">
+                        <input class="form__input js-subscribe-input" type="text" data-validate-field="phone"
+                            name="phone" placeholder="+1(_ _ _)_ _ _-_ _ _ _">
+                    </div>
+                    <button class="form__button" type="submit">Subscribe</button>
+                </form>
             </main>
         </div>
         @@include('components/_footer.html')
     </div>
+
+    <script>
+        var urlSubscribe = 'https://just-validate-api.herokuapp.com/submit';
+        var urlRedirect = '1';
+    </script>
+    <script src="https://unpkg.com/imask"></script>
+    <script defer src="../vendor/just-validate/dist/js/just-validate.min.js"></script>
     <script src="../js/main.min.js"></script>
 </body>
 
