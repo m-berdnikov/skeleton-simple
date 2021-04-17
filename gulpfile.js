@@ -10,6 +10,7 @@ const rename = require('gulp-rename');
 const sass = require('gulp-sass');
 const del = require('del');
 const plumber = require('gulp-plumber')
+const fileinclude = require('gulp-file-include');
 
 const ASSETS_PATH_SRC = 'src',
     ASSETS_PATH_BUILD = 'build',
@@ -63,21 +64,36 @@ function compressImg() {
         .pipe(dest(`${ASSETS_PATH_BUILD}/img/`))
 }
 
+function placeFavicon() {
+    return src(`${ASSETS_PATH_SRC}/favicon/**/*`)
+        .pipe(dest(`${ASSETS_PATH_BUILD}/favicon`))
+}
+
 function cleanBuild() {
     return del(`${ASSETS_PATH_BUILD}/**/*`, { force: true })
+}
+
+function includeHTML() {
+    return src([`${PAGE_PATH}/**/*.html`, `!${PAGE_PATH}/components/**/*.html`])
+    .pipe(fileinclude({
+        prefix: '@@',
+        basepath: '@file'
+      }))
+      .pipe(dest('build/pages'));
 }
 
 function startWatch() {
     watch(`${ASSETS_PATH_SRC}/js/**/*.js`, compressJS);
     watch(`${ASSETS_PATH_SRC}/scss/**/*.scss`, sassFun);
     watch(`${ASSETS_PATH_SRC}/img/**/*`, compressImg);
-    watch(`${PAGE_PATH}/**/*.html`).on('change', browserSync.reload);
+    watch(`${PAGE_PATH}/**/*`, includeHTML).on('change', browserSync.reload);
 }
 
 exports.js = compressJS;
 exports.sass = sassFun;
 exports.img = compressImg;
+exports.includeHTML = includeHTML;
 
-exports.default = parallel(sassFun, compressJS, compressImg, browsersync, startWatch);
+exports.default = parallel(sassFun, compressCSS, compressJS, placeFavicon, compressImg, includeHTML, browsersync, startWatch);
 exports.css = series(sassFun, compressCSS);
-exports.build = series(cleanBuild, sassFun, compressCSS, compressJS, compressImg);
+exports.build = series(cleanBuild, sassFun, compressCSS, compressJS, compressImg, placeFavicon, includeHTML);

@@ -2,27 +2,25 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Jedi Academy</title>
-    <link rel="stylesheet" href="../build/css/style.css">
+    @@include('components/_meta.html', {
+        "title": "Jedi Academy"
+        })
+
+    @@include('components/_head.html')
 </head>
 
 <body>
     <div class="wrapper">
         <div class="content">
-            <header class="header">
-                <a class="header__logo" href="#"></a>
-            </header>
+            @@include('components/_header.html')
             <main class="main">
                 <h1>May the Force be with you</h1>
-                <img src="../build/img/1-2.png" alt="Alt" width="500" height="500">
+                <img src="../img/1-2.png" alt="Alt" width="500" height="500">
             </main>
         </div>
-        <footer class="footer">
-            <p class="footer__info">2021</p>
-        </footer>
+        @@include('components/_footer.html')
     </div>
-    <script src="../build/js/main.min.js"></script>
+    <script src="../js/main.min.js"></script>
 </body>
 
 </html>
